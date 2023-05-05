@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import json
 from base import *
 
 
@@ -37,11 +38,11 @@ class Fgpa(BaseModel):
 # async def fgpa_calc():
 #     result = await calc_fgpa(Fgpa)
 #     return {"result": result}
-async def calc_fgpa(details: Fgpa):
-    cgpa1 = details.cgpa1
-    cgpa2 = details.cgpa2
-    cgpa3 = details.cgpa3
-    cgpa4 = details.cgpa4
+async def calc_fgpa(data: Fgpa):
+    cgpa1 = data.cgpa1
+    cgpa2 = data.cgpa2
+    cgpa3 = data.cgpa3
+    cgpa4 = data.cgpa4
 
     try:
         temp1 = cgpa1 * 1/6 	# Weight 1
@@ -54,7 +55,7 @@ async def calc_fgpa(details: Fgpa):
 
         levels = grade_to_classification(final_gpa)
 
-        result = {
+        return {
             "cgpa1": cgpa1,
             "cgpa2": cgpa2,
             "cgpa3": cgpa3,
@@ -62,7 +63,6 @@ async def calc_fgpa(details: Fgpa):
             "fgpa": final_gpa,
             "classification": levels
         }
-        return result
     except Exception as e:
         return {"error": str(e)}
     

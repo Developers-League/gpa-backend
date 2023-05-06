@@ -1,16 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-import json
+from model import Fgpa
 from base import *
 
-
-
-#  API class
 app = FastAPI()
 
 # To combine the frontend and backend since both are on different domains
-
 origins = ['http://localhost:3000', 'http://192.168.43.48:3000'] # frontend URL
 
 app.add_middleware(
@@ -20,24 +15,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
-
-# Default function for the API default path
-
-# @app.get('/')
-# async def root():
-#     return {"ping": "pong"}
-
-class Fgpa(BaseModel):
-    cgpa1: float
-    cgpa2: float
-    cgpa3: float
-    cgpa4: float
-
 # FGPA calculation endpoint
-@app.post('/api/calc-fgpa')
-# async def fgpa_calc():
-#     result = await calc_fgpa(Fgpa)
-#     return {"result": result}
+@app.post('/api/calculate-fgpa')
 async def calc_fgpa(data: Fgpa):
     cgpa1 = data.cgpa1
     cgpa2 = data.cgpa2
@@ -56,18 +35,17 @@ async def calc_fgpa(data: Fgpa):
         levels = grade_to_classification(final_gpa)
 
         return {
-            "cgpa1": cgpa1,
-            "cgpa2": cgpa2,
-            "cgpa3": cgpa3,
-            "cgpa4": cgpa4,
-            "fgpa": final_gpa,
+            "cgpa1": str(cgpa1),
+            "cgpa2": str(cgpa2),
+            "cgpa3": str(cgpa3),
+            "cgpa4": str(cgpa4),
+            "fgpa": str(final_gpa),
             "classification": levels
         }
     except Exception as e:
         return {"error": str(e)}
     
-
-
+    
 # # GPA and CGPA calculation endpoint
 # @app.post('/api/calc-gpa-and-cgpa')
 

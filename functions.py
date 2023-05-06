@@ -2,11 +2,11 @@ from base import *
 from model import *
 
 
-def calc_fgpa(details: Fgpa):
-    cgpa1 = details.cgpa1
-    cgpa2 = details.cgpa2
-    cgpa3 = details.cgpa3
-    cgpa4 = details.cgpa4
+def calc_fgpa(data):
+    cgpa1 = data.cgpa1
+    cgpa2 = data.cgpa2
+    cgpa3 = data.cgpa3
+    cgpa4 = data.cgpa4
 
     try:
         temp1 = cgpa1 * 1/6 	# Weight 1
@@ -19,15 +19,14 @@ def calc_fgpa(details: Fgpa):
 
         levels = grade_to_classification(final_gpa)
 
-        result = {
-            "cgpa1": cgpa1,
-            "cgpa2": cgpa2,
-            "cgpa3": cgpa3,
-            "cgpa4": cgpa4,
-            "fgpa": final_gpa,
+        return {
+            "cgpa1": str(cgpa1),
+            "cgpa2": str(cgpa2),
+            "cgpa3": str(cgpa3),
+            "cgpa4": str(cgpa4),
+            "fgpa": str(final_gpa),
             "classification": levels
         }
-        return result
     except Exception as e:
         return {"error": str(e)}
         

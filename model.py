@@ -14,9 +14,9 @@ class Cgpa(BaseModel):
 
 # Minimum and Maximum CGPA form data
 class Min_max_cgpa(BaseModel):
-    old_chours: int
-    new_chours: int
-    old_cgpa: float
+    oldCgpa: float
+    oldChours: float
+    newChours: float
 
 # Required grades to hit a desired CGPA form data
 class Required_cgpa(BaseModel):

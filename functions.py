@@ -2,7 +2,7 @@ from base import *
 from model import *
 
 
-async def calc_fgpa(data):
+def calc_fgpa(data: Fgpa):
     cgpa1 = data.cgpa1
     cgpa2 = data.cgpa2
     cgpa3 = data.cgpa3

@@ -10,7 +10,7 @@ class Fgpa(BaseModel):
 # CGPA form data
 class Cgpa(BaseModel):
     grades: list
-    credit: list 
+    credit: list
 
 # Minimum and Maximum CGPA form data
 class Min_max_cgpa(BaseModel):

@@ -4,6 +4,7 @@ main_grades = {"A": 4.0, "B+": 3.5,
 		 "D": 1.0, "E": 0,
 		 "F": 0}
 
+
 def getList(dict):
 	"""Returns dict keys as list.
 
@@ -79,8 +80,118 @@ def gpa_to_grades(gpa, course_num):
 		else:
 			grades_needed.append(grade[i])			#If it can, add grade letter to list and continue.
 	return grades_needed
-	# 	if len(grades_needed) == 0:
-	# 		return f"For the specifics above, you'll need a {gpa} GPA which requries you to fail all courses."
 
-	# return f"For this info, you'll need a {gpa} GPA which requires minimum grade(s) of {grades_needed}"
 
+def calculate_fgpa(data):
+    cgpa1 = data.cgpa1
+    cgpa2 = data.cgpa2
+    cgpa3 = data.cgpa3
+    cgpa4 = data.cgpa4
+
+    try:
+        temp1 = cgpa1 * 1/6 	# Weight 1
+        temp2 = cgpa2 * 1/6 	# Weight 2
+        temp3 = cgpa3 * 2/6 	# Weight 3
+        temp4 = cgpa4 * 2/6 	# Weight 4
+
+        final_gpa = temp1 + temp2 + temp3 + temp4
+        final_gpa = round(final_gpa, 2)
+
+        levels = grade_to_classification(final_gpa)
+
+        return {
+            "cgpa1": str(cgpa1),
+            "cgpa2": str(cgpa2),
+            "cgpa3": str(cgpa3),
+            "cgpa4": str(cgpa4),
+            "fgpa": str(final_gpa),
+            "classification": levels
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def calculate_min_max_cgpa(data):
+	old_chours = data.oldChours
+	new_chours = data.newChours
+	old_cgpa = data.oldCgpa
+	try:
+		total_chours = old_chours + new_chours  # Total credit hours.
+		old_points = old_chours * old_cgpa      # Weight of current gpa over current credit hours.
+
+		max_cgpa = ((new_chours * 4) + old_points) / total_chours	# Weight of new gpa over sem's credit hours/ divided by total credit hours.
+		max_cgpa = round(max_cgpa, 2)
+
+		min_cgpa = (old_points) / total_chours	# Weight of new gpa over sem's credit hours/ divided by total credit hours.
+		min_cgpa = round(min_cgpa, 2)
+
+		levels_max_cgpa = grade_to_classification(max_cgpa)
+		levels_min_cgpa = grade_to_classification(min_cgpa)
+
+		return {
+			"oldCgpa" : str(old_cgpa),
+			"maxCgpa" : str(max_cgpa),
+			"minCgpa" : str(min_cgpa),
+			"classificationMaxCgpa" : levels_max_cgpa,
+			"classificationMinCgpa" : levels_min_cgpa
+		}
+	except Exception as e:
+		return {"erroer": str(e)}
+
+
+def calculate_new_gpa(data):
+    grades_list = data.grades
+    credits_list = data.credit
+    
+    try:
+        total_gpt = 0
+        for i in range(len(grades_list)):
+            if grades_list[i] not in main_grades.keys():
+                return {"result" : "Invalid Grades"}
+            
+            grades_list[i] = main_grades[grades_list[i]]
+            total_gpt += grades_list[i] * credits_list[i]		# Total gradepoint
+            
+        gpa = total_gpt / sum(credits_list)
+        gpa = round(gpa, 2)
+
+        levels = grade_to_classification(gpa)		# Retrieve level of maximum CGPA
+
+        res = f"For {total_gpt} total grade point and {sum(credits_list)} credit hours, your CGPA is {gpa} ({levels})"
+        return {"feedback": res}
+    
+    except Exception as e:
+        return{"result" : str(e)}
+
+
+def calculate_req_grades(data):
+    old_cgpa = data.oldCgpa
+    old_chours = data.oldChours
+    new_cgpa = data.newCgpa
+    new_chours = data.newChours
+    course_num = data.courseNum
+    
+    try:
+        total_chours = old_chours + new_chours
+        new_points = total_chours * new_cgpa		# Average weight of your desired gpa over your total course hours.
+        old_points = old_chours * old_cgpa			# Average weight of your current gpa over your current course hours.
+        diff_points = new_points - old_points		# Difference between your desired weight and your current weight.
+
+        min_gpa = diff_points / new_chours
+        gpa = round(min_gpa, 2)
+
+        req_grades = gpa_to_grades(min_gpa, course_num)
+
+        res1 = f"You can't achieve a {new_cgpa} CGPA this semester. Too high"
+        res2 = f"You can't achieve a {new_cgpa} CGPA this semester. Too low"
+        res3 = f"For the data provided, you'll need a {gpa} GPA which requries you to fail all courses."
+        res4 = f"For this info, you'll need a {gpa} GPA which requires minimum grade(s) of {req_grades}"
+
+
+        if gpa > 4.00: return {"feedback" : res1}
+        if gpa < 0.00: return {"feedback" : res2}
+        if len(req_grades) == 0: return {"feedback" : res3}
+        return {"feedback" : res4}
+    
+    except Exception as e:
+        return{"error": str(e)}

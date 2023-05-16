@@ -57,4 +57,4 @@ async def required_grades(data: Required_grades):
 
 @app.get('/')
 def home():
-    return {"msg": "Welcome to out GPA app"}
+    return {"msg": "Welcome to the GPA app"}

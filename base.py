@@ -104,17 +104,26 @@ def calculate_fgpa(data):
 
         levels = grade_to_classification(final_gpa)
 
+          # GPA statistics
+        cgpa_list = [cgpa1, cgpa2, cgpa3, cgpa4]
+        highest_cgpa = max(cgpa_list)
+        lowest_cgpa = min(cgpa_list)
+        average_cgpa = sum(cgpa_list) / len(cgpa_list)
+        
         return {
             "cgpa1": str(cgpa1),
             "cgpa2": str(cgpa2),
             "cgpa3": str(cgpa3),
             "cgpa4": str(cgpa4),
             "fgpa": str(final_gpa),
-            "classification": levels
-        }
+            "classification": levels,
+            "highest_cgpa": str(highest_cgpa),
+            "lowest_cgpa": str(lowest_cgpa),
+            "average_cgpa": str(round(average_cgpa, 2)),
+            }
+    
     except Exception as e:
         return {"error": str(e)}
-
 
 def calculate_min_max_cgpa(data):
 	old_chours = data.oldChours

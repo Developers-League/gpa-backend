@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from model import *
-from base import *
+from model import Cgpa, Fgpa, Min_max_cgpa, Required_grades
+from base import calculate_fgpa, calculate_min_max_cgpa, calculate_new_gpa, calculate_req_grades 
 
 app = FastAPI()
 
@@ -53,3 +53,8 @@ async def required_grades(data: Required_grades):
         return result
     except Exception as e:
         return{"error": str(e)}
+
+
+@app.get('/')
+def home():
+    return {"msg": "Welcome to out GPA app"}

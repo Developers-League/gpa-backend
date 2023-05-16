@@ -49,37 +49,42 @@ def grade_to_classification(gpa):
 	
 
 def gpa_to_grades(gpa, course_num):
-	"""Converts GPA to grades
+    """Converts GPA to grades
 
-	Args: 
-		gpa: Your current cgpa. Type: float or int.
-		course_num: number of courses. Type: int
+    Args: 
+        gpa: Your current cgpa. Type: float or int.
+        course_num: number of courses. Type: int
 
-	Returns:
-		The grades needed to acquire a specific gpa. Type: list
+    Returns:
+        The grades needed to acquire a specific GPA as a string. Format: "<grade>: <count>, <grade>: <count>, ..."
 
-	Raises:
-		None
-	"""
-	if type(gpa) == str:	# Handles error
-		return gpa 
+    Raises:
+        None
+    """
+    if type(gpa) == str:  # Handles error
+        return gpa
 
-	i = 0 								# Grade
-	temp = 0.00							# Temporary gpa, 
-	grade = getList(main_grades)		# Get the grades (A to F)
-	grades_needed = []			
-	while True:					
-		temp += main_grades[grade[i]]/course_num	# Add gradepoint of grade to temp	
+    i = 0  # Grade
+    temp = 0.00  # Temporary GPA
+    grade = getList(main_grades)  # Get the grades (A to F)
+    grades_needed = {}
 
-		if temp > gpa and i > 5: 	# E and F carry zero weight. So end loop, when grade is on 5(E) and temp > gpa
-			break
+    while True:
+        temp += main_grades[grade[i]] / course_num  # Add gradepoint of grade to temp
 
-		if temp > gpa:				# If Grade[i] can't be added without exceeding gpa, delete added value and rollover to next grade.
-			temp -= main_grades[grade[i]]/course_num		
-			i += 1
-		else:
-			grades_needed.append(grade[i])			#If it can, add grade letter to list and continue.
-	return grades_needed
+        if temp > gpa and i > 5:  # E and F carry zero weight. So end loop when grade is on 5(E) and temp > gpa
+            break
+
+        if temp > gpa:  # If Grade[i] can't be added without exceeding GPA, delete added value and rollover to next grade.
+            temp -= main_grades[grade[i]] / course_num
+            i += 1
+        else:
+            if grade[i] in grades_needed:
+                grades_needed[grade[i]] += 1
+            else:
+                grades_needed[grade[i]] = 1
+
+    return ', '.join([f"{grade}: {count}" for grade, count in grades_needed.items()])
 
 
 def calculate_fgpa(data):

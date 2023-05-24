@@ -56,7 +56,7 @@ async def required_grades(data: Required_grades):
     
     
 # Convert CGPA to CWA and vice versa
-@app.get("/convert_weight")
+@app.get("/api/convert_weight")
 def convert_weight(cgpa: float = None, cwa: float = None):
     """Converts between CGPA (Cumulative Grade Point Average) and CWA (Cumulative Weighted Average).
 

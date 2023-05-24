@@ -171,7 +171,10 @@ def calculate_new_gpa(data):
 
         levels = grade_to_classification(gpa)		# Retrieve level of maximum CGPA
 
-        res = f"For {total_gpt} total grade point and {sum(credits_list)} credit hours, your CGPA is {gpa} ({levels})"
+        if len(grades_list) > len(credits_list) or len(grades_list) < len(credits_list):
+            res = f"Courses grades not equal to Courses credit hours"
+        else:
+            res = f"For {total_gpt} total grade point and {sum(credits_list)} credit hours, your CGPA is {gpa} ({levels})"
         return {"feedback": res}
     
     except Exception as e:

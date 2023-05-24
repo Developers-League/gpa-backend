@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from model import Cgpa, Fgpa, Min_max_cgpa, Required_grades
 from base import calculate_fgpa, calculate_min_max_cgpa, calculate_new_gpa, calculate_req_grades 
@@ -53,6 +53,34 @@ async def required_grades(data: Required_grades):
         return result
     except Exception as e:
         return{"error": str(e)}
+    
+    
+# Convert CGPA to CWA and vice versa
+@app.get("/convert_weight")
+def convert_weight(cgpa: float = None, cwa: float = None):
+    """Converts between CGPA (Cumulative Grade Point Average) and CWA (Cumulative Weighted Average).
+
+    Args:
+        cgpa: CGPA to convert. Type: float.
+        cwa: CWA to convert. Type: float.
+
+    Returns:
+        Converted value. Type: float.
+    """
+    if cgpa is not None and cwa is not None:
+        raise HTTPException(status_code=400, detail="Only one conversion value should be provided.")
+    elif cgpa is not None:
+        if cgpa > 4.0 or cgpa < 0:
+            raise HTTPException(status_code=400, detail="Invalid CGPA value. CGPA cannot be greater than 4.0 or less than 0.0.")
+        cwa = cgpa * 20
+        return {"feedback": f"Your converted CGPA is {cwa}"}
+    elif cwa is not None:
+        if cwa > 100 or cwa < 0:
+            raise HTTPException(status_code=400, detail="Invalid CWA value. CWA cannot be greater than 100 or less than 0.")
+        cgpa = cwa / 20
+        return {"feedback": f"Your converted CWA is {cgpa}"}
+    else:
+        raise HTTPException(status_code=400, detail="No conversion value provided.")
 
 
 @app.get('/')

@@ -165,29 +165,34 @@ def calculate_min_max_cgpa(data):
 def calculate_new_gpa(data):
     grades_list = data.grades
     credits_list = data.credit
-    
+
+    if len(grades_list) > len(credits_list) or len(credits_list) > len(grades_list):
+        raise ValueError("Credit hours and grades mismatch") 
+
     try:
         total_gpt = 0
         for i in range(len(grades_list)):
             if grades_list[i] not in main_grades.keys():
-                return {"result" : "Invalid Grades"}
-            
+                raise ValueError("Invalid Grades")
+
             grades_list[i] = main_grades[grades_list[i]]
-            total_gpt += grades_list[i] * credits_list[i]		# Total gradepoint
-            
+            total_gpt += grades_list[i] * credits_list[i]  # Total gradepoint
+
         gpa = total_gpt / sum(credits_list)
         gpa = round(gpa, 2)
 
-        levels = grade_to_classification(gpa)		# Retrieve level of maximum CGPA
+        levels = grade_to_classification(gpa)  # Retrieve level of maximum CGPA
 
-        if len(grades_list) > len(credits_list) or len(grades_list) < len(credits_list):
-            res = f"Courses grades not equal to Courses credit hours"
-        else:
-            res = f"For {total_gpt} total grade point and {sum(credits_list)} credit hours, your CGPA is {gpa} ({levels})"
+        if len(grades_list) != len(credits_list):
+            raise ValueError("Courses grades not equal to Courses credit hours")
+
+        res = f"For {total_gpt} total grade point and {sum(credits_list)} credit hours, your CGPA is {gpa} ({levels})"
         return {"feedback": res}
-    
+
+    except ValueError as e:
+        raise e  # Re-raise the ValueError to be caught in the endpoint
     except Exception as e:
-        return{"result" : str(e)}
+        raise Exception("Internal Server Error")  # Raise a generic exception to be caught in the endpoint
 
 
 def calculate_req_grades(data):

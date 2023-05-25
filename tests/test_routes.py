@@ -1,10 +1,9 @@
-from typing import NamedTuple
 from base import calculate_fgpa
 import pytest
 from fastapi.testclient import TestClient
 from fastapi import status
 from main import app
-from model import Fgpa
+from model import Cgpa, Fgpa
 
 
 @pytest.fixture(scope="module")
@@ -67,4 +66,35 @@ def test_calculate_min_max_cgpa_invalid_data(client):
 
     assert response.status_code == 400
     assert {"detail": "Negative values are not allowed for credit hours or CGPA."} == response.json()
+
+
+def test_calc_new_gpa_valid_data(client):
+    valid_data = {
+        "grades": ["A", "B", "C"],
+        "credit": [3, 4, 3]
+    }
+    response = client.post("/api/calc-gpa-and-cgpa", json=valid_data)
+
+    assert response.status_code == 200
+    assert "feedback" in response.json()
+
+
+def test_calc_new_gpa_invalid_grades(client):
+    invalid_data = {
+        "grades": ["A", "B", "X"],
+        "credit": [3, 4, 3]
+    }
+    response = client.post("/api/calc-gpa-and-cgpa", json=invalid_data)
+
+    assert response.status_code == 400
+
+
+def test_calc_new_gpa_credit_hours_mismatch(client):
+    invalid_data = {
+        "grades": ["A", "B", "C"],
+        "credit": [3, 4]
+    }
+    response = client.post("/api/calc-gpa-and-cgpa", json=invalid_data)
+
+    assert response.status_code == 400
 

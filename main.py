@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from model import Cgpa, Fgpa, Min_max_cgpa, Required_grades
 from base import calculate_fgpa, calculate_min_max_cgpa, calculate_new_gpa, calculate_req_grades 
@@ -41,12 +41,14 @@ async def min_max_cgpa(data: Min_max_cgpa):
 
 # GPA and CGPA calculation endpoint
 @app.post('/api/calc-gpa-and-cgpa')
-async def calc_new_gpa(data: Cgpa ):
+async def calc_new_gpa(data: Cgpa):
     try:
         result = calculate_new_gpa(data)
         return result
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        return{"result" : str(e)}
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 # Required grades calculation endpoint

@@ -43,36 +43,33 @@ def test_calculate_fgpa_missing_field(client):
 
 
 def test_calculate_min_max_cgpa_valid_data(client):
-    valid_data = {
-        "oldCgpa": 3.5,
-        "oldChours": 90,
-        "newChours": 30
-    }
+    valid_data = {"oldCgpa": 3.5, "oldChours": 90, "newChours": 30}
 
     response = client.post("/api/calc-min-max-gpa-per-sem", json=valid_data)
-    expected_keys = ["oldCgpa", "maxCgpa", "minCgpa", "classificationMaxCgpa", "classificationMinCgpa"]
+    expected_keys = [
+        "oldCgpa",
+        "maxCgpa",
+        "minCgpa",
+        "classificationMaxCgpa",
+        "classificationMinCgpa",
+    ]
 
     assert response.status_code == 200
     assert all(key in response.json() for key in expected_keys)
 
 
 def test_calculate_min_max_cgpa_invalid_data(client):
-    invalid_data = {
-        "oldCgpa": 3.5,
-        "oldChours": -10,
-        "newChours": 30
-    }
+    invalid_data = {"oldCgpa": 3.5, "oldChours": -10, "newChours": 30}
     response = client.post("/api/calc-min-max-gpa-per-sem", json=invalid_data)
 
     assert response.status_code == 400
-    assert {"detail": "Negative values are not allowed for credit hours or CGPA."} == response.json()
+    assert {
+        "detail": "Negative values are not allowed for credit hours or CGPA."
+    } == response.json()
 
 
 def test_calc_new_gpa_valid_data(client):
-    valid_data = {
-        "grades": ["A", "B", "C"],
-        "credit": [3, 4, 3]
-    }
+    valid_data = {"grades": ["A", "B", "C"], "credit": [3, 4, 3]}
     response = client.post("/api/calc-gpa-and-cgpa", json=valid_data)
 
     assert response.status_code == 200
@@ -80,21 +77,87 @@ def test_calc_new_gpa_valid_data(client):
 
 
 def test_calc_new_gpa_invalid_grades(client):
-    invalid_data = {
-        "grades": ["A", "B", "X"],
-        "credit": [3, 4, 3]
-    }
+    invalid_data = {"grades": ["A", "B", "X"], "credit": [3, 4, 3]}
     response = client.post("/api/calc-gpa-and-cgpa", json=invalid_data)
 
     assert response.status_code == 400
 
 
 def test_calc_new_gpa_credit_hours_mismatch(client):
-    invalid_data = {
-        "grades": ["A", "B", "C"],
-        "credit": [3, 4]
-    }
+    invalid_data = {"grades": ["A", "B", "C"], "credit": [3, 4]}
     response = client.post("/api/calc-gpa-and-cgpa", json=invalid_data)
 
     assert response.status_code == 400
 
+
+def test_calc_req_grades_valid_data(client):
+    valid_data = {
+        "oldCgpa": 3.5,
+        "oldChours": 90,
+        "newCgpa": 3.8,
+        "newChours": 30,
+        "courseNum": 6,
+    }
+    response = client.post("/api/calc-req-grades", json=valid_data)
+
+    assert response.status_code == 200
+    assert "feedback" in response.json()
+
+
+def test_calc_req_grades_high_cgpa(client):
+    invalid_data = {
+        "oldCgpa": 3.7,
+        "oldChours": 90,
+        "newCgpa": 4.5,
+        "newChours": 30,
+        "courseNum": 6,
+    }
+    response = client.post("/api/calc-req-grades", json=invalid_data)
+
+    assert response.status_code == 200
+    assert "feedback" in response.json()
+    assert "Too high" in response.json()["feedback"]
+
+
+def test_calc_req_grades_low_cgpa(client):
+    invalid_data = {
+        "oldCgpa": 3.7,
+        "oldChours": 90,
+        "newCgpa": -1.5,
+        "newChours": 30,
+        "courseNum": 6,
+    }
+    response = client.post("/api/calc-req-grades", json=invalid_data)
+
+    assert response.status_code == 200
+    assert "feedback" in response.json()
+    assert "Too low" in response.json()["feedback"]
+
+
+def test_calc_req_grades_fail_all_courses(client):
+    invalid_data = {
+        "oldCgpa": 3.0,
+        "oldChours": 90,
+        "newCgpa": 2.5,
+        "newChours": 30,
+        "courseNum": 6,
+    }
+    response = client.post("/api/calc-req-grades", json=invalid_data)
+
+    assert response.status_code == 200
+    assert "feedback" in response.json()
+
+
+def test_calc_req_grades_valid_req_grades(client):
+    valid_data = {
+        "oldCgpa": 3.5,
+        "oldChours": 90,
+        "newCgpa": 3.8,
+        "newChours": 30,
+        "courseNum": 6,
+    }
+    response = client.post("/api/calc-req-grades", json=valid_data)
+
+    assert response.status_code == 200
+    assert "feedback" in response.json()
+    assert "Too high" in response.json()["feedback"]

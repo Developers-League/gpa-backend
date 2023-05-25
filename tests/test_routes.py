@@ -161,3 +161,56 @@ def test_calc_req_grades_valid_req_grades(client):
     assert response.status_code == 200
     assert "feedback" in response.json()
     assert "Too high" in response.json()["feedback"]
+
+
+def test_convert_weight_cgpa_to_cwa_valid(client):
+    valid_data = {"cgpa": 3.5}
+    response = client.get("/api/convert_weight", params=valid_data)
+
+    assert response.status_code == 200
+    assert "feedback" in response.json()
+    assert "converted CGPA" in response.json()["feedback"]
+
+
+def test_convert_weight_cwa_to_cgpa_valid(client):
+    valid_data = {"cwa": 75}
+    response = client.get("/api/convert_weight", params=valid_data)
+
+    assert response.status_code == 200
+    assert "feedback" in response.json()
+    assert "converted CWA" in response.json()["feedback"]
+
+
+def test_convert_weight_both_values_provided(client):
+    invalid_data = {"cgpa": 3.5, "cwa": 70}
+    response = client.get("/api/convert_weight", params=invalid_data)
+
+    assert response.status_code == 400
+    assert "detail" in response.json()
+    assert "Only one conversion value" in response.json()["detail"]
+
+
+def test_convert_weight_invalid_cgpa_value(client):
+    invalid_data = {"cgpa": 5.0}
+    response = client.get("/api/convert_weight", params=invalid_data)
+
+    assert response.status_code == 400
+    assert "detail" in response.json()
+    assert "Invalid CGPA value" in response.json()["detail"]
+
+
+def test_convert_weight_invalid_cwa_value(client):
+    invalid_data = {"cwa": -10}
+    response = client.get("/api/convert_weight", params=invalid_data)
+
+    assert response.status_code == 400
+    assert "detail" in response.json()
+    assert "Invalid CWA value" in response.json()["detail"]
+
+
+def test_convert_weight_no_value_provided(client):
+    response = client.get("/api/convert_weight")
+    
+    assert response.status_code == 400
+    assert "detail" in response.json()
+    assert "No conversion value provided" in response.json()["detail"]

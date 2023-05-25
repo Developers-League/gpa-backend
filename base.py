@@ -96,7 +96,6 @@ def calculate_fgpa(data):
     if any(cgpa < 0 for cgpa in [cgpa1, cgpa2, cgpa3, cgpa4]):
         raise ValueError("CGPA values cannot be negative.")
 
-
     try:
         temp1 = cgpa1 * 1/6 	# Weight 1
         temp2 = cgpa2 * 1/6 	# Weight 2
@@ -129,32 +128,38 @@ def calculate_fgpa(data):
     except Exception as e:
         return {"error": str(e)}
 
+
 def calculate_min_max_cgpa(data):
-	old_chours = data.oldChours
-	new_chours = data.newChours
-	old_cgpa = data.oldCgpa
-	try:
-		total_chours = old_chours + new_chours  # Total credit hours.
-		old_points = old_chours * old_cgpa      # Weight of current gpa over current credit hours.
+    old_chours = data.oldChours
+    new_chours = data.newChours
+    old_cgpa = data.oldCgpa
+    
+    if old_chours < 0 or new_chours < 0 or old_cgpa < 0:
+        raise ValueError("Negative values are not allowed for credit hours or CGPA.")
 
-		max_cgpa = ((new_chours * 4) + old_points) / total_chours	# Weight of new gpa over sem's credit hours/ divided by total credit hours.
-		max_cgpa = round(max_cgpa, 2)
+    try:
+        total_chours = old_chours + new_chours  # Total credit hours.
+        old_points = old_chours * old_cgpa      # Weight of current gpa over current credit hours.
 
-		min_cgpa = (old_points) / total_chours	# Weight of new gpa over sem's credit hours/ divided by total credit hours.
-		min_cgpa = round(min_cgpa, 2)
+        max_cgpa = ((new_chours * 4) + old_points) / total_chours	# Weight of new gpa over sem's credit hours/ divided by total credit hours.
+        max_cgpa = round(max_cgpa, 2)
 
-		levels_max_cgpa = grade_to_classification(max_cgpa)
-		levels_min_cgpa = grade_to_classification(min_cgpa)
+        min_cgpa = (old_points) / total_chours	# Weight of new gpa over sem's credit hours/ divided by total credit hours.
+        min_cgpa = round(min_cgpa, 2)
 
-		return {
-			"oldCgpa" : str(old_cgpa),
-			"maxCgpa" : str(max_cgpa),
-			"minCgpa" : str(min_cgpa),
-			"classificationMaxCgpa" : levels_max_cgpa,
-			"classificationMinCgpa" : levels_min_cgpa
-		}
-	except Exception as e:
-		return {"erroer": str(e)}
+        levels_max_cgpa = grade_to_classification(max_cgpa)
+        levels_min_cgpa = grade_to_classification(min_cgpa)
+
+        return {
+            "oldCgpa": str(old_cgpa),
+            "maxCgpa": str(max_cgpa),
+            "minCgpa": str(min_cgpa),
+            "classificationMaxCgpa": levels_max_cgpa,
+            "classificationMinCgpa": levels_min_cgpa
+        }
+
+    except Exception as e:
+        return {"error": str(e)}
 
 
 def calculate_new_gpa(data):

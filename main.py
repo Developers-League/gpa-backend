@@ -29,10 +29,12 @@ async def fgpa(data: Fgpa):
 
 # Minimum and Maximum GPA calculation endpoint
 @app.post('/api/calc-min-max-gpa-per-sem')
-async def min_max_cgpa(data: Min_max_cgpa ):
+async def min_max_cgpa(data: Min_max_cgpa):
     try:
         result = calculate_min_max_cgpa(data)
         return result
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         return {"result": str(e)}
 

@@ -21,6 +21,8 @@ async def fgpa(data: Fgpa):
     try:
         result = calculate_fgpa(data)
         return result
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
     except Exception as e:
         return {"result": str(e)}
 

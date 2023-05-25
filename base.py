@@ -93,6 +93,10 @@ def calculate_fgpa(data):
     cgpa3 = data.cgpa3
     cgpa4 = data.cgpa4
 
+    if any(cgpa < 0 for cgpa in [cgpa1, cgpa2, cgpa3, cgpa4]):
+        raise ValueError("CGPA values cannot be negative.")
+
+
     try:
         temp1 = cgpa1 * 1/6 	# Weight 1
         temp2 = cgpa2 * 1/6 	# Weight 2

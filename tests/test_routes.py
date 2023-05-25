@@ -44,38 +44,27 @@ def test_calculate_fgpa_missing_field(client):
 
 
 def test_calculate_min_max_cgpa_valid_data(client):
-    # Define valid test data
     valid_data = {
         "oldCgpa": 3.5,
         "oldChours": 90,
         "newChours": 30
     }
 
-    # Send a POST request to the calc-min-max-gpa-per-sem endpoint with valid data
     response = client.post("/api/calc-min-max-gpa-per-sem", json=valid_data)
-
-    # Assert that the response status code is 200 (OK)
-    assert response.status_code == 200
-
-    # Assert that the response contains the expected keys
     expected_keys = ["oldCgpa", "maxCgpa", "minCgpa", "classificationMaxCgpa", "classificationMinCgpa"]
+
+    assert response.status_code == 200
     assert all(key in response.json() for key in expected_keys)
 
 
 def test_calculate_min_max_cgpa_invalid_data(client):
-    # Define invalid test data with a negative value for oldChours
     invalid_data = {
         "oldCgpa": 3.5,
         "oldChours": -10,
         "newChours": 30
     }
-
-    # Send a POST request to the calc-min-max-gpa-per-sem endpoint with invalid data
     response = client.post("/api/calc-min-max-gpa-per-sem", json=invalid_data)
 
-    # Assert that the response status code is 400 (Bad Request)
     assert response.status_code == 400
-
-    # Assert that the response contains an error message
     assert {"detail": "Negative values are not allowed for credit hours or CGPA."} == response.json()
 

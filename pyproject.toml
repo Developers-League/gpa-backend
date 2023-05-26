@@ -2,10 +2,9 @@
 name = "gpa-backend"
 version = "0.1.0"
 description = "GPA Selfcalre API"
-authors = ["greatnessmensah <ephraimmensah99@gmail.com>"]
+authors = ["Developers League"]
 license = "Proprietory"
 readme = "README.md"
-packages = [{include = "gpa_backend"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"

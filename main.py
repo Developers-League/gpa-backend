@@ -78,12 +78,12 @@ def convert_weight(cgpa: float = None, cwa: float = None):
     elif cgpa is not None:
         if cgpa > 4.0 or cgpa < 0:
             raise HTTPException(status_code=400, detail="Invalid CGPA value. CGPA cannot be greater than 4.0 or less than 0.0.")
-        cwa = cgpa * 20
+        cwa = cgpa * 25
         return {"feedback": f"Your converted CGPA is {cwa}"}
     elif cwa is not None:
         if cwa > 100 or cwa < 0:
             raise HTTPException(status_code=400, detail="Invalid CWA value. CWA cannot be greater than 100 or less than 0.")
-        cgpa = cwa / 20
+        cgpa = cwa / 25
         return {"feedback": f"Your converted CWA is {cgpa}"}
     else:
         raise HTTPException(status_code=400, detail="No conversion value provided.")

@@ -86,7 +86,7 @@ poetry add <package-name>
 #### Step 7: Start the uvicorn server
 
 ```bash
-uvicorn main:app --reload
+uvicorn src.api.main:app --reload
 ```
 
 

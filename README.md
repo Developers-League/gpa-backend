@@ -12,7 +12,7 @@
 
 ---
 
-<p align="center"> Backend API for GPA Selfcare
+<p align="center"> Backend API for the GPA Selfcare
     <br> 
 </p>
 

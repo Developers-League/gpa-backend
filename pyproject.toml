@@ -34,7 +34,3 @@ flake8 = "^6.0.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.init]
-commands = [
-    "echo heroku config:set POETRY_EXPORT_DEV_REQUIREMENTS=1",
-]

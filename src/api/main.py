@@ -12,21 +12,16 @@ app = FastAPI()
 origins = ["http://localhost:3000", "http://192.168.43.48:3000"]  # frontend URL
 
 
-def get_application():
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-    app.include_router(gpa_router)
-
-    @app.get("/", name="index")
-    def home() -> Dict[str, str]:
-        return {"msg": "Welcome to the GPA app"}
-
-    return app
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+app.include_router(gpa_router)
 
 
-app = get_application()
+@app.get("/", name="index")
+def home() -> Dict[str, str]:
+    return {"msg": "Welcome to the GPA app"}
